@@ -1,0 +1,488 @@
+AI Usage Guide for QA Automation Engineers
+What should a QA automation engineer ask AI to do, and what should they do themselves?
+Your goal is exactly right: use AI for small, specific, high-value tasks instead of asking it to do the entire automation project. This can save tokens, reduce unnecessary code generation, improve code quality, and help you develop your own automation skills.
+For your JavaScript + Playwright Test + POM workflow, I recommend this principle:
+The QA engineer owns the testing decisions. AI assists with specific tasks. The engineer verifies the results.
+
+AI should not replace your understanding of requirements, application behavior, test strategy, framework architecture, or actual test execution.
+
+1. The three categories of work
+A. Do it yourself
+Work that requires your judgment, application knowledge, accountability, or hands-on verification.
+- Understand the business requirement and expected behavior.
+- Decide what needs to be tested and why.
+- Explore the application and confirm the real workflow.
+- Decide test priority, risks, and acceptance criteria.
+- Review failures and determine whether the application or test is wrong.
+B. Ask AI for targeted assistance
+Tasks with a clear input, a limited scope, and an easy-to-check output.
+- Explain one Playwright API or error message.
+- Suggest a locator based on DOM evidence you provide.
+- Review a specific test or function.
+- Generate one test case from an approved requirement.
+- Suggest a minimal fix for a confirmed failure.
+C. Use automation tools yourself
+Routine operations are often faster and more reliable through your IDE, terminal, test runner, or existing scripts.
+- Search files, inspect folders, and find references.
+- Run tests and capture the actual exit code.
+- Format code and run linting.
+- Check Git diffs and inspect reports.
+- Confirm test discovery and verify generated files.
+2. What a QA engineer should generally do themselves
+These are tasks where delegating the whole decision to AI can create incorrect tests or unnecessary token usage.
+A. Requirement analysis and test planning
+
+
+
+Do it yourself
+
+
+
+Why
+
+
+
+Read the requirement, user story, acceptance criteria, and business rules.
+
+
+
+You are accountable for understanding what the product must do.
+
+
+
+Identify positive, negative, boundary, and security scenarios.
+
+
+
+You must decide the appropriate test coverage and risks.
+
+
+
+Identify missing or contradictory requirements.
+
+
+
+AI may silently make assumptions where clarification is required.
+
+
+
+Decide which scenarios are critical, high, medium, or low priority.
+
+
+
+Priorities depend on business impact and risk.
+
+
+
+Confirm expected results with the product owner or team.
+
+
+
+AI cannot authoritatively decide the intended business behavior.
+Ask AI for a narrow task: “Review these five approved test cases and identify missing negative scenarios. Do not rewrite the existing cases.”
+Don't ask AI to regenerate an entire test plan whenever you add one requirement. Ask it to analyze the specific change and identify the impact.
+B. Application exploration and locator discovery
+
+
+
+Do it yourself
+
+
+
+Ask AI
+
+
+
+Open the application and explore the real workflow.
+
+
+
+Explain which locator strategy is most reliable.
+
+
+
+Inspect the DOM using browser DevTools or Playwright Inspector.
+
+
+
+Compare two candidate locators you provide.
+
+
+
+Confirm whether an element is visible, enabled, unique, or inside an iframe.
+
+
+
+Review a locator for fragility and suggest a better alternative.
+
+
+
+Verify the actual result after clicking or submitting.
+
+
+
+Explain a selector or accessibility role you don't understand.
+For example, don't ask AI to guess your application's locator without providing evidence. Give it the relevant HTML or accessible information instead.
+<button type="submit">Login</button>
+Targeted request:
+Suggest the most reliable Playwright locator for this button. Give one solution and a one-line reason. Do not generate a full test.
+
+Expected answer:
+page.getByRole('button', { name: 'Login' })
+You must still verify that the locator uniquely identifies the correct button in the running application.
+C. Framework and coding decisions
+Do these decisions yourself, with team agreement where appropriate:
+- Decide whether the project uses POM, fixtures, and shared utilities.
+- Understand the existing directory structure and coding conventions.
+- Decide what belongs in a page object versus a test file.
+- Decide how test data, environment configuration, credentials, and reports are managed.
+- Review whether a proposed dependency or architectural change is necessary.
+- Check whether a utility already exists before creating another one.
+Ask AI to help with one bounded implementation task, for example:
+Review LoginPage.js. Identify duplicated locator logic. Suggest the smallest change that follows our existing POM convention. Do not edit any files.
+
+Or:
+Implement only the login() method in the existing page object. Preserve the current naming conventions and do not modify other files.
+
+Don't ask AI to “build the complete framework” when you already have a framework. That often creates duplicate utilities, conflicting fixtures, unnecessary dependencies, and large changes that are hard to review.
+D. Test execution and failure analysis
+Do these yourself or use your test runner and reporting tools:
+- Run the test and observe its actual result.
+- Confirm the command, environment, browser, and configuration.
+- Inspect the failure message, stack trace, screenshot, and trace.
+- Check whether the application itself is failing.
+- Confirm the fix by rerunning the affected test.
+- Run the relevant regression suite when required.
+Ask AI to interpret specific evidence, not to invent a cause.
+Bad request:
+My Playwright test failed. Fix everything.
+
+Better request:
+Analyze this error and the relevant test method. Identify the most likely cause and suggest one minimal fix. Do not change assertions or business expectations. If the evidence is insufficient, tell me what to inspect next.
+
+AI-generated code is not proof that a test passes. A test that is discovered, generated, or syntactically valid is not necessarily a test that has been executed successfully.
+3. What you should avoid asking AI to do
+These are not absolute prohibitions; they are tasks where a broad AI request is often wasteful or risky.
+1. Don't ask AI to repeat information you can get immediately
+Avoid: “List every file in my project,” “What is my current directory structure?” or “What scripts are in package.json?”
+Instead: use VS Code Explorer, terminal commands, or search. Ask AI only when you need help interpreting the results.
+2. Don't ask AI to explain the entire Playwright framework repeatedly
+Avoid requesting a complete tutorial on every task.
+Instead: learn the concept once, save your notes, and ask focused follow-up questions when you encounter a new problem.
+3. Don't ask AI to regenerate working files without a reason
+Avoid: “Rewrite my entire LoginPage.js and all test files.”
+Instead: request the smallest change and review the Git diff. Preserve working code and unrelated user changes.
+4. Don't ask AI to invent test expectations
+Avoid: “Create tests for every possible behavior of this application” without approved requirements.
+Instead: supply acceptance criteria and ask AI to identify gaps or propose scenarios for your review.
+5. Don't ask AI to fix failures by weakening tests
+Avoid accepting removal of assertions, skipping tests, adding arbitrary timeouts, or changing expected results simply to get a green run.
+Instead: identify the root cause, preserve the intended behavior, and change the test only when the test itself is demonstrably incorrect.
+6. Don't delegate security-sensitive decisions blindly
+Don't paste passwords, tokens, cookies, private keys, or confidential customer data into an AI prompt. Don't ask AI to bypass authentication or security controls.
+Instead: use approved environment variables and project policies, redact evidence, and obtain authorization for sensitive operations.
+4. Playwright automation: what to ask AI at each stage
+This is a practical reference for your OrangeHRM JavaScript + @playwright/test + POM project.
+
+
+
+Workflow stage
+
+
+
+Your responsibility
+
+
+
+Small, specific AI task
+
+
+
+1. Project discovery
+
+
+
+Inspect the repository and identify relevant files.
+
+
+
+“Review this package.json and identify the test command.”
+
+
+
+2. Excel test analysis
+
+
+
+Understand requirements and preserve test IDs.
+
+
+
+“Analyze test case TC_LOGIN_003 and identify missing negative coverage.”
+
+
+
+3. Test planning
+
+
+
+Decide scope, priority, and expected behavior.
+
+
+
+“Check this approved test plan for duplicate scenarios.”
+
+
+
+4. POM design
+
+
+
+Decide the responsibilities of each page object.
+
+
+
+“Suggest the minimum methods needed for this login workflow.”
+
+
+
+5. Locator discovery
+
+
+
+Inspect the live page and DOM.
+
+
+
+“Review this HTML and suggest a resilient locator.”
+
+
+
+6. Test generation
+
+
+
+Decide which approved cases to automate.
+
+
+
+“Generate only the test for TC_LOGIN_003 using the existing LoginPage.”
+
+
+
+7. Framework integration
+
+
+
+Understand existing fixtures and configuration.
+
+
+
+“Check whether this test correctly uses the existing fixture.”
+
+
+
+8. Test execution
+
+
+
+Run the tests and capture evidence.
+
+
+
+“Explain this stack trace and recommend one diagnostic step.”
+
+
+
+9. Test healing
+
+
+
+Determine the actual cause of failure.
+
+
+
+“Suggest a minimal fix without removing assertions.”
+
+
+
+10. Reporting
+
+
+
+Verify actual test results and counts.
+
+
+
+“Summarize these verified results in a short report.”
+Important: These requests should use the existing project files and conventions as their source of truth. AI should not invent the names of fixtures, page objects, commands, workbook columns, or environment variables.
+5. What this looks like in a real OrangeHRM workflow
+Consider automating the login functionality.
+Step 1 — You inspect the application
+You open the OrangeHRM login page, inspect the username and password fields, observe the login button, and confirm what happens after successful and unsuccessful logins.
+No AI needed if you already know how to perform these steps.
+Step 2 — You establish expected behavior
+You identify the approved scenarios: valid login, invalid password, empty required fields, and any additional requirements from the test specification.
+Use AI only if you want it to identify gaps or review a particular scenario.
+Step 3 — You provide a targeted coding request
+Example request:
+Generate only the Playwright test for TC_LOGIN_001 using JavaScript and @playwright/test. Reuse the existing login page object and project fixtures. Follow the approved test plan. Do not modify framework files or generate other tests. If required details are missing, list them instead of guessing.
+Step 4 — You review and run the code
+- Confirm the test ID maps to the right requirement.
+- Check that the existing page object is used correctly.
+- Verify that the assertion checks the intended outcome.
+- Run the test and inspect the actual result.
+- Ask AI for a specific fix only if the evidence warrants it.
+The key difference is that you are not asking AI to own the entire login automation task. You are giving it one bounded implementation responsibility.
+6. How to save tokens when using an AI coding agent
+Since you're using a custom orangehrm-playwright agent in VS Code, these practices are especially useful.
+Rule 1: Load only the context required for the current task
+Your agent already has a task-first, selective context-loading design. Use it as intended.
+- Excel analysis → load the Excel analysis instructions and skill.
+- POM design → load the POM instructions and skill.
+- Test generation → load the approved test plan, relevant page object, and test-generation skill.
+- Failure diagnosis → load the failing test, relevant error evidence, and healing guidance.
+Don't ask the agent to read every context file, skill, test, report, and source file for every small change.
+Rule 2: Don't resend large context unnecessarily
+If the agent has already read the relevant project instructions in the current working context, refer to the exact task or file it needs to continue with. Ask it to retrieve additional context only when necessary.
+However, don't assume that all previous context remains available indefinitely. If the coding session resets or the agent cannot access a required file, let it inspect that file.
+Rule 3: Limit the output size
+Use constraints such as:
+- “Return only the changed method.”
+- “Provide at most three findings.”
+- “Show the minimal diff.”
+- “Explain in five bullet points.”
+- “Don't repeat the project instructions.”
+- “Do not generate a report unless requested.”
+- “Ask one question only if a blocking detail is missing.”
+Rule 4: Prefer incremental changes
+Instead of:
+Generate 30 tests, all page objects, fixtures, reports, and configuration.
+
+Use:
+1. Review the approved test plan.
+2. Generate one representative test.
+3. Verify it against the existing framework.
+4. Generate the next small batch once the pattern is correct.
+Batching can be efficient once the conventions are established, but large batches of unverified code can increase review and repair costs.
+Rule 5: Use your tools before asking AI to do mechanical work
+
+
+
+Task
+
+
+
+Use first
+
+
+
+Find a file
+
+
+
+VS Code Explorer or file search
+
+
+
+Find a method reference
+
+
+
+Workspace search
+
+
+
+Check changed files
+
+
+
+git diff --stat and git diff
+
+
+
+Run tests
+
+
+
+Existing Playwright test command
+
+
+
+Format code
+
+
+
+Configured formatter
+
+
+
+Find available npm scripts
+
+
+
+package.json
+
+
+
+Inspect a failure
+
+
+
+Test output, screenshot, or trace
+
+
+
+Understand an unfamiliar error
+
+
+
+Ask AI with the relevant error and code
+The aim is not to minimize every interaction with AI at all costs. It is to avoid paying for reasoning you don't need.
+7. Your reusable prompt template
+Use this format for most small automation tasks. You don't need to include every field every time; include only what is relevant.
+Task: [One specific task]
+Context: [Relevant file, test ID, method, or error]
+Expected result: [What you need the AI to produce]
+Constraints:
+- Follow the existing JavaScript + Playwright Test + POM conventions.
+- Inspect only the files needed for this task.
+- Do not modify unrelated files or regenerate working code.
+- Do not guess missing requirements, locators, or framework APIs.
+- Do not execute tests, install dependencies, or proceed to another workflow stage unless requested or authorized.
+Output: [Minimal code, a diff, a short explanation, or findings only.]
+Examples of small prompts
+Understand an error
+“Explain this Playwright error in simple terms. Give the most likely cause and one next step. Don't rewrite the test.”
+ Copy prompt
+Review a test
+“Review only this test for incorrect assertions, fragile locators, fixed waits, and unnecessary duplication. List findings and suggested minimal fixes. Don't edit files.”
+ Copy prompt
+Generate one test
+“Implement only TC_LOGIN_003 from the approved test plan. Use the existing page object and fixtures. Preserve the test ID. Change no unrelated files.”
+ Copy prompt
+Fix a confirmed failure
+“Using this error and the relevant code, identify the root cause and make the smallest evidence-based fix. Preserve assertions and business behavior. Report the changed files and checks actually performed.”
+ Copy prompt
+8. The QA engineer's checklist
+Before asking AI, quickly ask yourself these questions.
+My AI usage checklist
+0 of 8
+Before asking
+Can I do this quickly with VS Code, a terminal command, or Playwright Inspector?
+Have I defined the exact task and expected output?
+Am I providing the relevant code, requirement, or error instead of the entire project?
+Have I identified the files AI is allowed to change?
+Before accepting
+Have I verified that the proposed locator and assertions match actual application behavior?
+Have I checked the diff for unintended changes?
+Have I run the required tests and verified the actual results?
+Have I protected credentials and confidential project data?
+Reset checklist
+Final recommendation
+For your OrangeHRM automation agent, follow this simple division:
+- You decide: what to test, why to test it, the expected results, priorities, and whether a fix is correct.
+- Your tools handle: file search, test execution, formatting, Git inspection, and routine verification.
+- AI helps with: specific coding tasks, code reviews, error explanations, locator suggestions, test-case gap analysis, and minimal evidence-based fixes.
+- You verify: every important generated change and the actual test results.
+One final point: saving tokens is not just about shorter prompts. The biggest savings usually come from avoiding unnecessary context loading, repeated full-file rewrites, broad multi-stage requests, and long outputs you don't need. A short, precise task with the right evidence is usually more valuable than a large prompt asking AI to do everything.

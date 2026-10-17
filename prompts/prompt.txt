@@ -1,0 +1,291 @@
+1. Understand what gets loaded and when
+Component	Where to put it	Purpose
+Project instructions	.github/copilot-instructions.md	Rules Copilot should follow across the repository
+Context files	context/*.md	Your OrangeHRM details, framework rules, and workflow
+Custom skills	.github/skills/<skill-name>/SKILL.md	Reusable procedures Copilot can invoke when relevant
+Custom agent	.github/agents/<agent-name>.agent.md	An agent with a defined role, tools, and instructions
+Task prompt	Copilot Chat or Copilot CLI	The specific task you want performed
+Playwright MCP/tools	Configure in the relevant environment	Lets the agent interact with supported external tools or a browser
+
+
+
+PlaywrightTest/
+├── .github/
+│   ├── copilot-instructions.md
+│   ├── agents/
+│   │   └── orangehrm-playwright.agent.md
+│   └── skills/
+│       ├── excel-test-analysis/
+│       │   └── SKILL.md
+│       ├── pom-design/
+│       │   └── SKILL.md
+│       ├── javascript-playwright-tests/
+│       │   └── SKILL.md
+│       ├── framework-integration/
+│       │   └── SKILL.md
+│       ├── test-healing/
+│       │   └── SKILL.md
+│       └── orangehrm-agent-workflow/
+│           └── SKILL.md
+├── context/
+│   ├── context.md
+│   ├── 01_testcase_analysis.md
+│   ├── 02_pom_generation.md
+│   ├── 03_test_generation.md
+│   ├── 04_framework_integration.md
+│   ├── 05_test_healing.md
+│   └── 06_agent_workflow.md
+├── ManualTests/
+│   └── testcase.xlsx
+├── pages/
+├── tests/
+├── artifacts/
+├── playwright.config.js
+└── package.json
+
+
+
+-------
+
+4. How to submit your first task
+Start with analysis only. Don't ask the agent to analyze the workbook, create a POM, generate tests, and heal failures in a single first request.
+In Copilot Chat, select your custom OrangeHRM agent (or the default coding agent if you haven't created it) and submit:
+
+-- prompt
+
+Read `.github/copilot-instructions.md`, `context/context.md`, `context/01_testcase_analysis.md`, `context/06_agent_workflow.md`, and the `excel-test-analysis` skill.
+
+Inspect the repository and locate the actual manual test workbook. Analyze its worksheets and test cases. Create or update `artifacts/test-plan.md`, preserving the real test IDs, steps, preconditions, and expected results.
+
+Do not generate or modify Playwright test code yet. Do not invent missing test cases. List ambiguities, missing test data, and proposed additions separately. Report which files and worksheets you inspected and ask me to review the plan before proceeding.
+
+-------
+
+note - Review the resulting plan before asking for code generation.
+
+
+5. Submit the second task: generate tests
+After you approve the test plan, submit:
+
+
+--- prompt
+
+Read `.github/copilot-instructions.md`, `context/context.md`, `context/02_pom_generation.md`, `context/03_test_generation.md`, and `context/04_framework_integration.md`.
+
+Use the `pom-design`, `javascript-playwright-tests`, and `framework-integration` skills as relevant. Read the approved `artifacts/test-plan.md`.
+
+Inspect the existing Playwright configuration, tests, POMs, fixtures, and utilities. Implement the approved cases using JavaScript and `@playwright/test`, following the current framework conventions. Preserve source test IDs and meaningful assertions.
+
+Do not hardcode credentials or invent requirements. Run syntax checks and `npx playwright test --list` when possible. Execute the relevant tests if the environment is configured and permitted. Report files changed, commands actually run, and actual results.
+
+-------
+
+
+6. Submit the third task: heal failures
+Once you've run the tests and have actual failure output, ask the agent to diagnose the failures:
+
+
+--- prompt
+
+Read `context/context.md`, `context/05_test_healing.md`, and the `test-healing` skill.
+
+Inspect the failing test, stack trace, screenshot, trace, locator evidence, and relevant configuration. Identify the most likely root cause before editing. Make only the smallest justified fix and preserve the original test intent.
+
+Rerun the focused test and relevant regression tests if possible. Record the evidence, change, and actual results in `artifacts/healing-report.md`. Do not weaken assertions, silently skip failures, or claim success without rerunning the tests.
+
+----
+
+9. Verify that Copilot is actually using your context and skills
+Start a new chat and submit this diagnostic request:
+
+--- prompt
+
+Before making any changes, tell me which project instruction files, context files, custom skills, and agent instructions you discovered for this OrangeHRM Playwright repository.
+
+Identify which files you actually read in this conversation. Explain which task-specific context and skill you would use for (1) Excel analysis, (2) POM design, (3) test generation, and (4) failure healing.
+
+Do not claim that a file was loaded unless you actually accessed it. Do not modify any files yet.
+
+----
+
+
+
+My recommendation
+For your project, use this order:
+1. Default instructions: .github/copilot-instructions.md
+2. Context: context/context.md plus the relevant task-specific file
+3. Skills: select the skill matching the task
+4. Custom agent: orangehrm-playwright for the complete lifecycle
+5. Task prompt: tell the agent exactly what to do now
+6. Validation: inspect changes, run tests, and review actual results
+Use the default coding agent for general programming and the custom OrangeHRM agent for your repeatable UI automation workflow. This gives you a reusable setup without needing to paste every rule into every chat.
+
+
+
+----
+
+
+Using the current project instructions, OrangeHRM agent definition, context files, and relevant skills, analyze the manual test case Excel workbook in the project.
+
+1. Discover the actual workbook path and inspect its sheets, columns, test IDs, test steps, and expected results. Do not assume a file path without verifying it.
+2. Follow `context/01_testcase_analysis.md` and the `excel-test-analysis` skill.
+3. Generate `artifacts/test-plan.md` from the workbook's actual requirements.
+4. Include objectives, scope, feature-wise scenarios, test case traceability, priorities where justified, test data and environment requirements, automation feasibility, coverage summary, ambiguities, and open questions.
+5. Preserve source test IDs and meaning. Do not invent requirements or claim unverified application behavior as fact. Separate recommendations and proposed additional scenarios from source test cases.
+6. Follow all existing project instructions and approval requirements.
+7. Do not generate or modify POM classes or automated test files yet. This task is limited to analyzing the workbook and producing the test plan.
+8. Report the source workbook used, output file path, number of source test cases analyzed, and any issues preventing complete analysis.
+
+Save the result to `artifacts/test-plan.md`. If the workbook is missing or unreadable, report the issue instead of fabricating a plan.
+
+
+
+-- we should use custom agent:
+
+Yes — using a custom orangehrm-playwright agent instead of the default coding agent is a good practice for your OrangeHRM-specific automation project. Your uploaded agent definition already has a strong foundation: task routing, context and skill selection, approval gates, security rules, test execution, and evidence-based failure diagnosis. Pasted markdown.md
+
+My main recommendation is to make it a scope-controlled, task-oriented agent, rather than an agent that loads every instruction and every skill for every request.
+The important distinction is that a custom agent helps guide the LLM; it does not, by itself, guarantee that the model can access only OrangeHRM or only certain files. You should combine agent instructions with narrowly scoped tasks, selective context, and appropriate tool permissions.
+1. The architecture I recommend
+Keep your existing files, but give each layer a single responsibility.
+1. Project-wide instructions
+.github/copilot-instructions.md
+Security, coding standards, allowed changes, shared rules.
+
+
+
+2. OrangeHRM custom agent
+.github/agents/orangehrm-playwright.agent.md
+Target application, task routing, approval gates, and workflow.
+
+
+
+3. Context files
+context/
+Detailed project knowledge and procedures, loaded when relevant.
+
+
+
+4. Skills
+.github/skills/
+Reusable, task-specific procedures such as Excel analysis or POM generation.
+
+
+
+5. Task output
+artifacts/test-plan.md, generated tests, execution reports
+The actual deliverable for the current request.
+
+
+2. How to limit the agent to the requested task
+Your current agent already defines separate stages for Excel analysis, POM design, test generation, integration, execution, and healing. Pasted markdown.md
+ The main improvement I suggest is to make task selection explicit.
+For example:
+
+
+User request	Context to read	Skill to use	Allowed scope
+Create a test plan	context.md, 01_testcase_analysis.md, relevant workflow instructions	excel-test-analysis	Read workbook; write plan only
+Create a POM	context.md, 02_pom_generation.md, approved plan	pom-design	Create or update required page objects
+Generate tests	context.md, 03_test_generation.md, approved plan	javascript-playwright-tests	Generate requested .spec.js files
+Fix a failing test	Relevant context and 05_test_healing.md	test-healing	Diagnose and make minimal supported fix
+Integrate tests	context.md, 04_framework_integration.md	framework-integration	Integrate with existing configuration
+Important: Do not make the agent read all six context files and all six skills for every task. Load the relevant material, plus shared rules and any necessary dependencies.
+For instance, a request to create a test plan should not trigger POM creation, code generation, dependency installation, or test execution.
+
+
+
+3. How to save LLM tokens
+
+3. How to save LLM tokens
+The most useful optimization is reducing repeated context, not simply shortening every file.
+
+A. Keep the main agent file concise
+Keep its role, critical constraints, task-routing table, and approval rules. Move detailed procedures into the relevant skill files.
+
+
+
+
+B. Avoid duplicating rules
+Put security and shared coding rules in project-wide instructions. Put Excel-specific rules in the Excel skill and locator-specific rules in the POM skill. Link to these files rather than copying their full contents into the agent.
+
+
+
+
+C. Use progressive disclosure
+Start with the task and shared rules, then load the selected skill, and inspect only the source files needed for that task. Read additional files when a dependency requires them.
+
+
+
+
+D. Return concise evidence-based summaries
+Report files inspected, files changed, validation results, and unresolved issues. Avoid dumping entire files or lengthy reasoning into every response.
+
+
+
+Token savings are not guaranteed: actual consumption depends on the model, IDE, tools, conversation history, and which instructions or skills are automatically included. A skill only saves tokens if its detailed instructions are not already loaded elsewhere.
+
+
+4. One improvement to your current agent
+I would add a section like this to orangehrm-playwright.agent.md, near Task Routing.
+
+## Task Scope and Context Loading
+
+### Task-first execution
+
+At the start of each request:
+
+1. Classify the request into one primary task: project discovery, Excel analysis/test planning, POM design, test generation, framework integration, test execution, or failure diagnosis.
+2. Identify the requested deliverable and permitted file changes.
+3. Read the project-wide instructions and the minimum shared context needed for the task.
+4. Load the matching skill and task-specific context files.
+5. Inspect additional files only when required by a dependency or unresolved question.
+
+### Context-loading rules
+
+- Do not read every context file or skill by default.
+- Do not repeat full instructions already defined in authoritative project-wide files.
+- Treat skills as detailed procedures and context files as project-specific knowledge.
+- Use the approved test plan and existing framework conventions as inputs when generating tests.
+- If a task crosses multiple stages, load the additional context and skills only when entering those stages.
+
+### Strict scope control
+
+- Modify only files required for the requested deliverable.
+- For planning-only requests, read source files and write the test plan; do not generate or modify automation code.
+- For test-generation requests, use the approved requirements and existing framework.
+- Do not execute tests, install dependencies, refactor unrelated files, or proceed to later workflow stages unless requested or authorized by the established workflow.
+- Preserve existing user changes and follow all approval gates.
+
+### Completion
+
+Report the deliverable, files created or modified, checks actually performed, and outstanding blockers. Never claim an operation succeeded unless there is evidence of its outcome.
+
+
+This is an additional scope-control layer, not a replacement for your existing security and change-control rules.
+5. Can you restrict the agent to OrangeHRM and a particular URL?
+You can instruct it to work only on:
+
+- OrangeHRM Open Source Demo.
+- The configured login URL and verified application routes.
+- The current repository and its existing Playwright framework.
+- The requested task and approved scope.
+Your existing file already defines the login URL and dashboard route pattern. Pasted markdown.md
+
+But distinguish instructional restrictions from technical restrictions:
+- Instructions: Tell the agent not to modify unrelated projects or browse unrelated sites.
+- Tool permissions: Where supported, limit file, terminal, browser, and network access.
+- Validation: Verify the target URL before browser actions and do not send credentials to other domains.
+An instruction alone cannot guarantee that an agent will never access another URL or file. Use actual environment permissions when you need enforcement.
+Also, if you are using VS Code with GitHub Copilot, check the agent and skill discovery conventions supported by your installed Copilot version. Your filename and YAML front matter should match the conventions that your environment recognizes; a correctly written Markdown file is not sufficient if the IDE does not discover it.
+6. Final recommended approach
+I would keep one OrangeHRM specialist agent and multiple small skills, rather than create a separate agent for every operation immediately.
+Start with this setup:
+1. One project-wide instruction file for non-negotiable rules.
+2. One OrangeHRM agent for routing and scope control.
+3. One context file per major workflow stage.
+4. One focused skill per repeatable task.
+5. One generated test plan based on the actual Excel workbook.
+6. Explicit approval before moving from planning to code generation, whenever your workflow requires it.
+Only consider separate planner, generator, and healer agents later if you find that separate responsibilities genuinely need different tools, permissions, or workflows.
+That gives you a more maintainable setup, less irrelevant context, and better control over what the agent does for each request—without adding unnecessary agent complexity.
+

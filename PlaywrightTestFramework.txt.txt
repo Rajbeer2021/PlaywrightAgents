@@ -1,0 +1,233 @@
+
+Playwright Test Framework (TypeScript)
+│
+├── playwright.config.ts       # Global configuration
+├── tests/
+│   ├── login.spec.ts          # Test cases
+│   └── profile.spec.ts
+├── fixtures/
+│   └── test-fixtures.ts       # Custom fixtures
+├── pages/
+│   └── LoginPage.ts           # Page Object Model
+├── utils/
+│   └── ApiUtils.ts
+├── test-data/
+│   └── users.json
+└── package.json               # Project dependencies/scripts
+
+
+
+
+import { test, expect } from '@playwright/test';
+
+test('Valid login', async ({ page }) => {
+
+    await page.goto('https://example.com');
+
+    await expect(page).toHaveTitle(/Example/);
+
+});
+
+Explanation
+
+test() defines the test case.
+
+'Valid login' is the test title.
+
+page is a built-in Playwright fixture.
+
+async and await handle asynchronous browser actions.
+
+expect() performs assertions.
+
+
+Note - Playwright's built-in fixtures provide ready-to-use test dependencies such as page, browser, context, and request.
+
+
+------------------------------------------------------------------
+
+5. Playwright Hooks vs TestNG Annotations
+
+5.1 @BeforeMethod and @afterMethod → test.beforeEach() and test.afterEach()
+
+
+
+import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({ page }) => {
+    await page.goto('https://example.com');
+});
+
+test.afterEach(async ({ page }, testInfo) => {
+
+    console.log(`Test completed: ${testInfo.title}`);
+    console.log(`Status: ${testInfo.status}`);
+
+});
+
+test('Test 1', async ({ page }) => {
+    await expect(page).toHaveTitle(/Example/);
+}
+
+);
+
+test('Test 2', async ({ page }) => {
+    await expect(page.locator('body')).toBeVisible();
+});
+
+
+
+
+// Test syntax.
+
+test.beforeEach(async ({page}) => {});
+
+test('test01', async ({page}) => {});
+
+test.afterEach(async, ({page}) => {});
+
+test('t01', async ({})  =>  {});  # 5 things.
+
+import {page, expect} from '@playwright/test';
+
+test('tc01', async  ({page}) =>  {});
+
+
+
+-----------------------------------------------------------
+
+@beforeClass - test.beforeAll()
+@afterClass  - test.afterAll()
+
+
+# note in playwright, we use test.beforeAll(), test.afterAll() in place of @beforesuite, @aftersuite, @abeforetest, @afterTest..
+
+   @Test   === test('name', async ({}) => {}) - Declares a fundamental test case.
+ 
+1. @Test(enabled = false)      === test.skip(). --> Bypasses the execution of that specific test.
+2. @Test(groups = {"smoke"})   === tags: ['@smoke'] or @smoke in title. --> Labels tests for conditional running via command-line grep.
+
+3. @Test(timeOut = 5000)       === test.setTimeout() or test.slow() --> Overrides or triples the duration limit for a slow test.
+
+4. @DataProvider   ===  test.describe.configure() or for...of loops  --> Loops over an array of data dynamically to generate multiple test instances.
+
+
+
+
+-----------------------------------------------------------
+
+
+TestNG (Java)
+
+	
+
+Playwright Test (TypeScript)
+
+@Test
+
+	
+
+test()
+
+@BeforeSuite
+
+	
+
+No direct built-in equivalent; project-level setup or global setup
+
+@AfterSuite
+
+	
+
+No direct built-in equivalent; teardown
+
+@BeforeTest
+
+	
+
+No exact equivalent; project-level setup or fixtures
+
+@AfterTest
+
+	
+
+No exact equivalent; project-level teardown or fixtures
+
+@BeforeMethod
+
+	
+
+test.beforeEach()
+
+@AfterMethod
+
+	
+
+test.afterEach()
+
+@BeforeClass
+
+	
+
+test.beforeAll() within a file or describe scope
+
+@AfterClass
+
+	
+
+test.afterAll() within a file or describe scope
+
+testng.xml
+
+	
+
+playwright.config.ts + CLI options
+
+pom.xml
+
+	
+
+package.json
+
+groups
+
+	
+
+Tags such as @smoke, @regression
+
+priority
+
+	
+
+No direct built-in priority attribute
+
+dependsOnMethods
+
+	
+
+No direct equivalent; use explicit sequencing or conditional logic carefully
+
+dataProvider
+
+	
+
+Parameterized tests
+
+ITestResult / listeners
+
+	
+
+Reporter APIs and test hooks
+
+invocationCount
+
+	
+
+Loop/parameterized tests (with care)
+
+parallel="methods"
+
+	
+
+Playwright workers and parallel test execution
+
